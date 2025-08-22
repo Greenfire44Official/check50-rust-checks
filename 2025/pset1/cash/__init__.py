@@ -1,17 +1,17 @@
 import check50
-import check50.c
+import check50_rs
 
 
 @check50.check()
 def exists():
-    """cash.c exists"""
-    check50.exists("cash.c")
+    """cash.rs exists"""
+    check50.exists("cash.rs")
 
 
 @check50.check(exists)
 def compiles():
-    """cash.c compiles"""
-    check50.c.compile("cash.c", lcs50=True)
+    """cash.rs compiles"""
+    check50_rs.compile("cash.rs", lcs50=True)
 
 
 @check50.check(compiles)
