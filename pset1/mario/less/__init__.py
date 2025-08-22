@@ -6,6 +6,7 @@ import check50_rs
 def exists():
     """src/main.rs exists"""
     check50.exists("src/main.rs")
+    check50.include("1.txt", "2.txt", "8.txt", "12.txt")
 
 
 @check50.check(exists)
