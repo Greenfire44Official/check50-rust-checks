@@ -3,13 +3,13 @@ import check50_rs
 
 @check50.check()
 def exists():
-    """credit.rs exists"""
-    check50.exists("credit.rs")
+    """src/main.rs exists"""
+    check50.exists("src/main.rs")
 
 @check50.check(exists)
 def compiles():
-    """credit.rs compiles"""
-    check50_rs.compile("credit.rs", lcs50=True)
+    """src/main.rs compiles"""
+    check50_rs.compile("src/main.rs", lcs50=True)
 
 def _test_credit_card(card_number, expected_output):
     """Helper function to test credit card validation with proper error handling"""

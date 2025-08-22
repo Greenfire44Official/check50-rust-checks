@@ -1,7 +1,7 @@
 check50: 
   files: &check50_files
     - !exclude "*"
-    - !require credit.rs
+    - !require src/main.rs
   dependencies:
     - git+https://github.com/ArturoBrandt/check50_rs.git
 
