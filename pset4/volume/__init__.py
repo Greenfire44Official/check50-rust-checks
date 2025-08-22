@@ -1,5 +1,5 @@
 import check50
-import check50.c
+import check50_rs
 
 # permits either truncating or rounding the floats to ints
 HASHES_HALF = [
@@ -19,21 +19,20 @@ HASHES_DOUBLE = [
 
 @check50.check()
 def exists():
-    """volume.c exists"""
-    check50.exists("volume.c")
-    check50.include("input.wav")
+    """src/main.rs exists"""
+    check50.exists("src/main.rs")
 
 
 @check50.check(exists)
 def compiles():
-    """volume.c compiles"""
-    check50.c.compile("volume.c", lcs50=True)
+    """src/main.rs compiles"""
+    check50_rs.compile("src/main.rs")
 
 
 @check50.check(compiles)
 def audio_half():
     """reduces audio volume, factor of 0.5 correctly"""
-    check50.run("./volume input.wav output.wav 0.5").exit(0)
+    check50.run("./target/debug/volume input.wav output.wav 0.5").exit(0)
     print("half: " + check50.hash("output.wav"))
     if check50.hash("output.wav") not in HASHES_HALF:
         raise check50.Failure("audio is not correctly altered, factor of 0.5")
@@ -42,7 +41,7 @@ def audio_half():
 @check50.check(compiles)
 def audio_tenth():
     """reduces audio volume, factor of 0.1 correctly"""
-    check50.run("./volume input.wav output.wav 0.1").exit(0)
+    check50.run("./target/debug/volume input.wav output.wav 0.1").exit(0)
     print("tenth: " + check50.hash("output.wav"))
     if check50.hash("output.wav") not in HASHES_TENTH:
         raise check50.Failure("audio is not correctly altered, factor of 0.1")
@@ -51,7 +50,7 @@ def audio_tenth():
 @check50.check(compiles)
 def audio_x2():
     """increases audio volume, factor of 2 correctly"""
-    check50.run("./volume input.wav output.wav 2").exit(0)
+    check50.run("./target/debug/volume input.wav output.wav 2").exit(0)
     print("double: " + check50.hash("output.wav"))
     if check50.hash("output.wav") not in HASHES_DOUBLE:
         raise check50.Failure("audio is not correctly altered, factor of 2")

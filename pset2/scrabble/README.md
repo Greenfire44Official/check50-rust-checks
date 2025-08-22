@@ -3,7 +3,7 @@
 Determine which of two Scrabble words is worth more.
 
 ```
-$ ./scrabble
+$ ./target/debug/scrabble
 Player 1: COMPUTER
 Player 2: science
 Player 1 wins!
@@ -44,28 +44,28 @@ Complete the implementation of `scrabble.c` at right, such that it determines th
 Your program should behave per the examples below.
 
 ```
-./scrabble
+./target/debug/scrabble
 Player 1: Question?
 Player 2: Question!
 Tie!
 ```
 
 ```
-$ ./scrabble
+$ ./target/debug/scrabble
 Player 1: Oh,
 Player 2: hai!
 Player 2 wins!
 ```
 
 ```
-$ ./scrabble
+$ ./target/debug/scrabble
 Player 1: COMPUTER
 Player 2: science
 Player 1 wins!
 ```
 
 ```
-$ ./scrabble
+$ ./target/debug/scrabble
 Player 1: Scrabble
 Player 2: wiNNeR
 Player 1 wins!

@@ -1,5 +1,5 @@
 import check50
-import check50.c
+import check50_rs
 import random
 
 # Scrabble points table for each letter (A-Z)
@@ -31,69 +31,71 @@ for i in range(len(POINTS_ORDER)):
 
 @check50.check()
 def exists():
-    """scrabble.c exists"""
-    check50.exists("scrabble.c")
+    """src/main.rs exists"""
+    check50.exists("src/main.rs")
+
 
 @check50.check(exists)
 def compiles():
-    """scrabble.c compiles"""
-    check50.c.compile("scrabble.c", lcs50=True)
+    """src/main.rs compiles"""
+    check50_rs.compile("src/main.rs")
+
 
 @check50.check(compiles)
 def tie_letter_case():
     """handles letter cases correctly"""
-    check50.run("./scrabble").stdin("LETTERCASE").stdin("lettercase").stdout(*TIE).exit(0)
+    check50.run("./target/debug/scrabble").stdin("LETTERCASE").stdin("lettercase").stdout(*TIE).exit(0)
 
 @check50.check(compiles)
 def tie_punctuation():
     """handles punctuation correctly"""
-    check50.run("./scrabble").stdin("Punctuation!?!?").stdin("punctuation").stdout(*TIE).exit(0)
+    check50.run("./target/debug/scrabble").stdin("Punctuation!?!?").stdin("punctuation").stdout(*TIE).exit(0)
 
 @check50.check(compiles)
 def test1():
     """correctly identifies 'Question?' and 'Question!' as a tie"""
-    check50.run("./scrabble").stdin("Question?").stdin("Question!").stdout(*TIE).exit(0)
+    check50.run("./target/debug/scrabble").stdin("Question?").stdin("Question!").stdout(*TIE).exit(0)
 
 @check50.check(compiles)
 def test2():
     """correctly identifies 'drawing' and 'illustration' as a tie"""
-    check50.run("./scrabble").stdin("drawing").stdin("illustration").stdout(*TIE).exit(0)
+    check50.run("./target/debug/scrabble").stdin("drawing").stdin("illustration").stdout(*TIE).exit(0)
 
 @check50.check(compiles)
 def test3():
     """correctly identifies 'hai!' as winner over 'Oh,'"""
-    check50.run("./scrabble").stdin("Oh,").stdin("hai!").stdout(*PLAYER_2_WINS).exit(0)
+    check50.run("./target/debug/scrabble").stdin("Oh,").stdin("hai!").stdout(*PLAYER_2_WINS).exit(0)
 
 @check50.check(compiles)
 def test4():
     """correctly identifies 'COMPUTER' as winner over 'science'"""
-    check50.run("./scrabble").stdin("COMPUTER").stdin("science").stdout(*PLAYER_1_WINS).exit(0)
+    check50.run("./target/debug/scrabble").stdin("COMPUTER").stdin("science").stdout(*PLAYER_1_WINS).exit(0)
 
 @check50.check(compiles)
 def test5():
     """correctly identifies 'Scrabble' as winner over 'wiNNeR'"""
-    check50.run("./scrabble").stdin("Scrabble").stdin("wiNNeR").stdout(*PLAYER_1_WINS).exit(0)
+    check50.run("./target/debug/scrabble").stdin("Scrabble").stdin("wiNNeR").stdout(*PLAYER_1_WINS).exit(0)
 
 @check50.check(compiles)
 def test6():
     """correctly identifies 'pig' as winner over 'dog'"""
-    check50.run("./scrabble").stdin("pig").stdin("dog").stdout(*PLAYER_1_WINS).exit(0)
+    check50.run("./target/debug/scrabble").stdin("pig").stdin("dog").stdout(*PLAYER_1_WINS).exit(0)
 
 @check50.check(compiles)
 def complex_case():
     """correctly identifies 'Skating!' as winner over 'figure?'"""
-    check50.run("./scrabble").stdin("figure?").stdin("Skating!").stdout(*PLAYER_2_WINS).exit(0)
+    check50.run("./target/debug/scrabble").stdin("figure?").stdin("Skating!").stdout(*PLAYER_2_WINS).exit(0)
 
 @check50.check(complex_case)
 def test_strict_order():
     """correctly identifies winner between random words"""
     indices = random.sample(range(len(POINTS)-1), min(5, len(POINTS)-1))
     for i in indices:
-        check50.run("./scrabble").stdin(chr(i + ord('a'))).stdin(chr(i + 1 + ord('a'))).stdout(*RESULTS[i]).exit(0)
+        check50.run("./target/debug/scrabble").stdin(chr(i + ord('a'))).stdin(chr(i + 1 + ord('a'))).stdout(*RESULTS[i]).exit(0)
 
 @check50.check(test_strict_order)
 def test_scoring_accuracy():
     """implementation correctly calculates scores using the Scrabble points table"""
     letters = random.sample(list(POINTS_TABLE.items()), 5)
     for letter, points in letters:
-        check50.run("./scrabble").stdin(letter).stdin(f'{random.choice(ONE_POINT_LETTERS) * points}').stdout(f"[Tt]ie!?", "Tie!").exit(0)
+        check50.run("./target/debug/scrabble").stdin(letter).stdin(f'{random.choice(ONE_POINT_LETTERS) * points}').stdout(f"[Tt]ie!?", "Tie!").exit(0)

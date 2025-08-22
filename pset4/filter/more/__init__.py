@@ -1,5 +1,5 @@
 import check50
-import check50.c
+import check50_rs
 import re
 
 SAMPLE_IMAGES = [
@@ -70,34 +70,34 @@ def compiles():
 def grayscale_single_pixel():
     """grayscale correctly filters single pixel with whole number average"""
     log(SAMPLE_PIXEL(20, 40, 90))
-    check50.run("./testing 0 0").stdout("50 50 50\n");
+    check50.run("./target/debug/testing 0 0").stdout("50 50 50\n");
     pass
 
 @check50.check(compiles)
 def grayscale_rounding():
     """grayscale correctly filters single pixel without whole number average"""
     log(SAMPLE_PIXEL(27, 28, 28))
-    check50.run("./testing 0 1").stdout("28 28 28\n");
+    check50.run("./target/debug/testing 0 1").stdout("28 28 28\n");
     pass
 
 @check50.check(compiles)
 def grayscale_gray():
     """grayscale leaves alone pixels that are already gray"""
     log(SAMPLE_PIXEL(50, 50, 50))
-    check50.run("./testing 0 2").stdout("50 50 50\n");
+    check50.run("./target/debug/testing 0 2").stdout("50 50 50\n");
     pass
 
 @check50.check(compiles)
 def grayscale_multi():
     """grayscale correctly filters simple 3x3 image"""
     log(SAMPLE_IMAGES[0])
-    check50.run("./testing 0 3").stdout("85 85 85\n" * 9);
+    check50.run("./target/debug/testing 0 3").stdout("85 85 85\n" * 9);
 
 @check50.check(compiles)
 def grayscale3x3():
     """grayscale correctly filters more complex 3x3 image"""
     log(SAMPLE_IMAGES[1])
-    check50.run("./testing 0 4").stdout("".join([
+    check50.run("./target/debug/testing 0 4").stdout("".join([
         "20 20 20\n", "50 50 50\n", "80 80 80\n",
         "127 127 127\n", "137 137 137\n", "147 147 147\n",
         "210 210 210\n", "230 230 230\n", "248 248 248\n"
@@ -108,7 +108,7 @@ def grayscale3x3():
 def grayscale4x4():
     """grayscale correctly filters 4x4 image"""
     log(SAMPLE_IMAGES[2])
-    check50.run("./testing 0 5").stdout("".join([
+    check50.run("./target/debug/testing 0 5").stdout("".join([
         "20 20 20\n", "50 50 50\n", "80 80 80\n", "110 110 110\n",
         "127 127 127\n", "137 137 137\n", "147 147 147\n", "157 157 157\n",
         "204 204 204\n", "214 214 214\n", "234 234 234\n", "251 251 251\n",
@@ -119,7 +119,7 @@ def grayscale4x4():
 def reflect_row2():
     """reflect correctly filters 1x2 image"""
     log(SAMPLE_IMAGES[3])
-    check50.run("./testing 2 0").stdout("".join([
+    check50.run("./target/debug/testing 2 0").stdout("".join([
         "0 0 255\n", "255 0 0\n"
     ]))
 
@@ -127,7 +127,7 @@ def reflect_row2():
 def reflect_row3():
     """reflect correctly filters 1x3 image"""
     log(SAMPLE_IMAGES[4])
-    check50.run("./testing 2 1").stdout("".join([
+    check50.run("./target/debug/testing 2 1").stdout("".join([
         "0 0 255\n", "0 255 0\n", "255 0 0\n"
     ]))
 
@@ -135,7 +135,7 @@ def reflect_row3():
 def reflect_simple():
     """reflect correctly filters image that is its own mirror image"""
     log(SAMPLE_IMAGES[0])
-    check50.run("./testing 2 2").stdout("".join([
+    check50.run("./target/debug/testing 2 2").stdout("".join([
         "255 0 0\n", "255 0 0\n", "255 0 0\n",
         "0 255 0\n", "0 255 0\n", "0 255 0\n",
         "0 0 255\n", "0 0 255\n", "0 0 255\n"
@@ -145,7 +145,7 @@ def reflect_simple():
 def reflect3():
     """reflect correctly filters 3x3 image"""
     log(SAMPLE_IMAGES[1])
-    check50.run("./testing 2 3").stdout("".join([
+    check50.run("./target/debug/testing 2 3").stdout("".join([
         "70 80 90\n", "40 50 60\n", "10 20 30\n",
         "130 150 160\n", "120 140 150\n", "110 130 140\n",
         "240 250 255\n", "220 230 240\n", "200 210 220\n"
@@ -155,7 +155,7 @@ def reflect3():
 def reflect4():
     """reflect correctly filters 4x4 image"""
     log(SAMPLE_IMAGES[2])
-    check50.run("./testing 2 4").stdout("".join([
+    check50.run("./target/debug/testing 2 4").stdout("".join([
         "100 110 120\n", "70 80 90\n", "40 50 60\n", "10 20 30\n",
         "140 160 170\n", "130 150 160\n", "120 140 150\n", "110 130 140\n",
         "245 254 253\n", "225 234 243\n", "205 214 223\n", "195 204 213\n",
@@ -166,25 +166,25 @@ def reflect4():
 def blur_middle():
     """blur correctly filters middle pixel"""
     log(SAMPLE_IMAGES[1])
-    check50.run("./testing 3 0").stdout("127 140 149\n")
+    check50.run("./target/debug/testing 3 0").stdout("127 140 149\n")
 
 @check50.check(compiles)
 def blur_edge():
     """blur correctly filters pixel on edge"""
     log(SAMPLE_IMAGES[1])
-    check50.run("./testing 3 1").stdout("80 95 105\n")
+    check50.run("./target/debug/testing 3 1").stdout("80 95 105\n")
 
 @check50.check(compiles)
 def blur_corner():
     """blur correctly filters pixel in corner"""
     log(SAMPLE_IMAGES[1])
-    check50.run("./testing 3 2").stdout("70 85 95\n")
+    check50.run("./target/debug/testing 3 2").stdout("70 85 95\n")
 
 @check50.check(compiles)
 def blur3():
     """blur correctly filters 3x3 image"""
     log(SAMPLE_IMAGES[1])
-    check50.run("./testing 3 3").stdout("".join([
+    check50.run("./target/debug/testing 3 3").stdout("".join([
         "70 85 95\n", "80 95 105\n", "90 105 115\n",
         "117 130 140\n", "127 140 149\n", "137 150 159\n",
         "163 178 188\n", "170 185 194\n", "178 193 201\n"
@@ -194,7 +194,7 @@ def blur3():
 def blur4():
     """blur correctly filters 4x4 image"""
     log(SAMPLE_IMAGES[2])
-    check50.run("./testing 3 4").stdout("".join([
+    check50.run("./target/debug/testing 3 4").stdout("".join([
         "70 85 95\n", "80 95 105\n", "100 115 125\n", "110 125 135\n",
         "113 126 136\n", "123 136 145\n", "142 155 163\n", "152 165 173\n",
         "113 119 136\n", "143 151 164\n", "156 166 171\n", "180 190 194\n",
@@ -205,25 +205,25 @@ def blur4():
 def edges_middle():
     """edges correctly filters middle pixel"""
     log(SAMPLE_IMAGES[5])
-    check50.run("./testing 4 0").stdout("210 150 60\n")
+    check50.run("./target/debug/testing 4 0").stdout("210 150 60\n")
 
 @check50.check(compiles)
 def edges_edge():
     """edges correctly filters pixel on edge"""
     log(SAMPLE_IMAGES[5])
-    check50.run("./testing 4 1").stdout("213 228 255\n")
+    check50.run("./target/debug/testing 4 1").stdout("213 228 255\n")
 
 @check50.check(compiles)
 def edges_corner():
     """edges correctly filters pixel in corner"""
     log(SAMPLE_IMAGES[5])
-    check50.run("./testing 4 2").stdout("76 117 255\n")
+    check50.run("./target/debug/testing 4 2").stdout("76 117 255\n")
 
 @check50.check(compiles)
 def edges3():
     """edges correctly filters 3x3 image"""
     log(SAMPLE_IMAGES[5])
-    check50.run("./testing 4 3").stdout("".join([
+    check50.run("./target/debug/testing 4 3").stdout("".join([
         "76 117 255\n", "213 228 255\n", "192 190 255\n",
         "114 102 255\n", "210 150 60\n", "103 108 255\n",
         "114 117 255\n", "200 197 255\n", "210 190 255\n"
@@ -233,7 +233,7 @@ def edges3():
 def edges4():
     """edges correctly filters 4x4 image"""
     log(SAMPLE_IMAGES[6])
-    check50.run("./testing 4 4").stdout("".join([
+    check50.run("./target/debug/testing 4 4").stdout("".join([
         "76 117 255\n", "213 228 255\n", "255 255 255\n", "255 255 255\n",
         "114 102 255\n", "210 150 60\n", "177 171 156\n", "250 247 255\n",
         "161 89 255\n", "126 128 181\n", "114 170 192\n", "247 220 192\n",

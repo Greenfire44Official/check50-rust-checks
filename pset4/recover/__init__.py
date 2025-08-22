@@ -1,5 +1,5 @@
 import check50
-import check50.c
+import check50_rs
 
 HASHES = [
     "6e2e4e56677e55cda750a2c0bc1c96fb4952ee37aafcc0810d0d5a883834abee",  # 000.jpg
@@ -56,31 +56,31 @@ HASHES = [
 
 @check50.check()
 def exists():
-    """recover.c exists."""
-    check50.include("card.raw")
-    check50.exists("recover.c")
+    """src/main.rs exists"""
+    check50.exists("src/main.rs")
+
 
 @check50.check(exists)
 def compiles():
-    """recover.c compiles."""
-    check50.c.compile("recover.c", lcs50=True)
+    """src/main.rs compiles"""
+    check50_rs.compile("src/main.rs")
 
 @check50.check(compiles)
 def test_noimage():
     """handles lack of forensic image"""
-    check50.run("./recover").exit(1)
+    check50.run("./target/debug/recover").exit(1)
 
 @check50.check(compiles)
 def first_image():
     """recovers 000.jpg correctly"""
-    check50.run("./recover card.raw").exit(0, timeout=10)
+    check50.run("./target/debug/recover card.raw").exit(0, timeout=10)
     if check50.hash("000.jpg") != HASHES[0]:
         raise check50.Failure("recovered image does not match")
 
 @check50.check(compiles)
 def middle_images():
     """recovers middle images correctly"""
-    check50.run("./recover card.raw").exit(0, timeout=10)
+    check50.run("./target/debug/recover card.raw").exit(0, timeout=10)
     for i, hash in enumerate(HASHES[1:-1], 1):
         if hash != check50.hash("{:03d}.jpg".format(i)):
             raise check50.Failure("recovered image does not match")
@@ -88,14 +88,14 @@ def middle_images():
 @check50.check(compiles)
 def last_image():
     """recovers 049.jpg correctly"""
-    check50.run("./recover card.raw").exit(0, timeout=10)
+    check50.run("./target/debug/recover card.raw").exit(0, timeout=10)
     if check50.hash("049.jpg") != HASHES[-1]:
         raise check50.Failure("recovered image does not match")
   
 @check50.check(last_image)
 def memory():
     """program is free of memory errors"""
-    code = check50.c.valgrind("./recover card.raw").exit(timeout=10)
+    code = check50_rs.valgrind("./target/debug/recover card.raw").exit(timeout=10)
     if code != 0:
         raise check50.Failure("valgrind returned a segfault")
 
