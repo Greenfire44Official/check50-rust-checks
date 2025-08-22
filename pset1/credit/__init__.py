@@ -14,7 +14,7 @@ def compiles():
 def _test_credit_card(card_number, expected_output):
     """Helper function to test credit card validation with proper error handling"""
     try:
-        check50.run("./credit").stdin(card_number).stdout(expected_output).stdout(check50.EOF).exit(0)
+        check50.run("./target/debug/credit").stdin(card_number).stdout(expected_output).stdout(check50.EOF).exit(0)
     except check50.Missing as e:
         raise check50.Failure("Program did not exit after processing input.")
 

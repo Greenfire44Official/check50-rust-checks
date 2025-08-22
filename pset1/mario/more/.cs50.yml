@@ -1,7 +1,10 @@
 check50: 
   files: &check50_files
     - !exclude "*"
-    - !require mario.c
+    - !require src/main.rs
+    - !require Cargo.toml
+  dependencies:
+    - git+https://github.com/ArturoBrandt/check50_rs.git
 
 submit50:
   files: *check50_files

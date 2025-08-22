@@ -1,18 +1,18 @@
 import check50
-import check50.c
+import check50_rs
 import re
 
 
 @check50.check()
 def exists():
-    """hello.c exists"""
-    check50.exists("hello.c")
+    """src/main.rs exists"""
+    check50.exists("src/main.rs")
 
 
 @check50.check(exists)
 def compiles():
-    """hello.c compiles"""
-    check50.c.compile("hello.c", lcs50=True)
+    """src/main.rs compiles"""
+    check50_rs.compile("src/main.rs")
 
 
 @check50.check(compiles)
@@ -36,12 +36,12 @@ def bowser():
 def check_name(name):
     # Define expected, actual outputs
     expected = f"hello, {name}\n"
-    actual = check50.run("./hello").stdin(name).stdout()
+    actual = check50.run("./target/debug/hello").stdin(name).stdout()
 
     # Check output
-    if not re.match(regex(name), actual):
+    if not re.match(regex(name), actual): # type: ignore
         try:
-            last_character = actual[-1]
+            last_character = actual[-1] # type: ignore
         except IndexError:
             raise check50.Mismatch(expected=expected, actual=actual)
 
