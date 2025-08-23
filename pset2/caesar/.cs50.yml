@@ -3,8 +3,7 @@ check50:
     - !exclude "*"
     - !require src/main.rs
     - !require Cargo.toml
+    - !include Cargo.lock
   dependencies:
-    - git+https://github.com/ArturoBrandt/check50_rs.git
+    - git+https://github.com/Greenfire44Official/check50_rs.git
 
-submit50:
-  files: *check50_files

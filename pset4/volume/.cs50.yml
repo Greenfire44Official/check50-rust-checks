@@ -9,5 +9,4 @@ check50:
     - !exclude "*"
     - !require volume.c
 
-submit50:
-  files: *check50_files
+

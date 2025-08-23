@@ -3,5 +3,4 @@ check50:
     - !exclude "*"
     - !require tideman.c
 
-submit50:
-  files: *check50_files
+

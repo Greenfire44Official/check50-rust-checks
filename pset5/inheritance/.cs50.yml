@@ -8,5 +8,4 @@ check50:
     - !exclude "*"
     - !require inheritance.c
 
-submit50:
-  files: *check50_files
+

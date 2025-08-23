@@ -7,5 +7,4 @@ check50:
     - !exclude speller.c
     - !require dictionary.c
 
-submit50:
-  files: *check50_files
+
