@@ -1,0 +1,3 @@
+The original problem from cs50 provided "distribution code" and had some big restrictions on how to complete the problem. However, I want to give people the liberty to solve the problem however they wish to, as long as the output is the desired output all solutions count.
+
+Because of this, I had to delete a lot of tests and modify a couple other tests. It no longer follows the exact same tests that cs50 originally provided, but I've tried to make sure I covered all possibilities. If I missed something please let me know by submitting an issue.

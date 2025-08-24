@@ -65,9 +65,10 @@ Additionally if you get a message about the package already being installed and 
 
 ## Progress
 ✅ Problem checks that have been tested to work.
-⛔️ Partial completion
+⛔️ Partial completion / Not tested.
 ❌ Not tested
 ```bash
+check50-rust-checks
 ├── pset1✅
 │   ├── cash✅
 │   ├── credit✅
@@ -83,7 +84,7 @@ Additionally if you get a message about the package already being installed and 
 │   ├── scrabble✅
 │   └── substitution✅
 ├── pset3⛔️
-│   ├── plurality⛔️
+│   ├── plurality✅
 │   ├── runoff⛔️
 │   └── tideman⛔️
 ├── pset4⛔️
