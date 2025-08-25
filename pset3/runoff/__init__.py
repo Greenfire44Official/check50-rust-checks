@@ -2,6 +2,9 @@ import check50
 import check50_rs
 import re
 
+exec = "./target/debug/runoff"
+a, b, c, d = "Alice", "Bob", "Charlie", "David"
+
 
 @check50.check()
 def exists():
@@ -15,162 +18,152 @@ def compiles():
     check50_rs.compile("src/main.rs")
 
 
-@check50.check(compiles)
-@check50.hidden("vote function did not return true")
-def vote_returns_true():
-    """vote returns true when given name of candidate"""
-    check50.run("./target/debug/runoff_test 0 0").stdout("true").exit(0)
+@check50.hidden("Did not handle no candidates")
+def handles_no_candidates():
+    """Handles no candidates"""
+    code = check50.run(f"{exec}").exit()
+    if not code != 0:
+        raise check50.Failure("Did not handle no candidates")
 
 
 @check50.check(compiles)
-@check50.hidden("vote function did not return false")
-def vote_returns_false():
-    """vote returns false when given name of invalid candidate"""
-    check50.run("./target/debug/runoff_test 0 1").stdout("false").exit(0)
+@check50.hidden("Rejected one candidates (MAX=9)")
+def accepts_one_candidates():
+    """Accepts one candidates"""
+    process = check50.run(f"{exec} Alice")
+    try:
+        process.exit(0, timeout=5)
+    except check50.Failure as e:
+        if str(e) != "timed out while waiting for program to exit":
+            raise check50.Failure("Rejected MAX candidates (MAX=9)")
 
 
 @check50.check(compiles)
-@check50.hidden("vote function did not correctly set preferences")
-def vote_sets_preference1():
-    """vote correctly sets first preference for first voter"""
-    check50.run("./target/debug/runoff_test 0 2").stdout("2").exit(0)
+@check50.hidden("Rejected MAX candidates (MAX=9)")
+def accepts_max_candidates():
+    """Accepts MAX candidates"""
+    process = check50.run(f"{exec} 1 2 3 4 5 6 7 8 9")
+    try:
+        process.exit(0, timeout=5)
+    except check50.Failure as e:
+        if str(e) != "timed out while waiting for program to exit":
+            raise check50.Failure("Rejected MAX candidates (MAX=9)")
 
 
 @check50.check(compiles)
-@check50.hidden("vote function did not correctly set preferences")
-def vote_sets_preference2():
-    """vote correctly sets third preference for second voter"""
-    check50.run("./target/debug/runoff_test 0 3").stdout("0").exit(0)
+@check50.hidden("Did not reject too many candidates (MAX=9)")
+def handles_too_many_candidates():
+    """Rejects too many candidates"""
+    code = check50.run(f"{exec} 1 2 3 4 5 6 7 8 9 10").exit()
+    if not code != 0:
+        raise check50.Failure("Did not reject too many candidates (MAX=9)")
 
 
 @check50.check(compiles)
-@check50.hidden("vote function did not correctly set preferences")
-def vote_sets_all_preferences():
-    """vote correctly sets all preferences for voter"""
-    check50.run("./target/debug/runoff_test 0 4").stdout("1 0 2").exit(0)
+@check50.hidden("Did not reject invalid candidate")
+def handles_invalid_candidates():
+    """Rejects invalid candidate"""
+    code = check50.run(f"{exec} {a} {b}").stdin("1").stdin(c).exit(1)
 
 
 @check50.check(compiles)
-@check50.hidden("tabulate function did not produce correct vote totals")
-def tabulate1():
-    """tabulate counts votes when all candidates remain in election"""
-    check50.run("./target/debug/runoff_test 1 5").stdout("3 3 1 0 ").exit(0)
+# @check50.hidden("Did not identify Alice as winner of election")
+def print_winner0():
+    """Identifies Alice as winner of election"""
+    votes: list[list[str]] = [[a, b, c]] * 3 + [[b, c, a]] * 2 + [[c, a, b]]
+    result = test(number_of_votes=6, votes=votes)
+    check_winner(result, "Alice\n")
 
 
 @check50.check(compiles)
-@check50.hidden("tabulate function did not produce correct vote totals")
-def tabulate2():
-    """tabulate counts votes when one candidate is eliminated"""
-    check50.run("./target/debug/runoff_test 1 6").stdout("3 3 1 0 ").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("tabulate function did not produce correct vote totals")
-def tabulate3():
-    """tabulate counts votes when multiple candidates are eliminated"""
-    check50.run("./target/debug/runoff_test 1 7").stdout("3 4 0 0 ").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("tabulate function did not produce correct vote totals")
-def tabulate4():
-    """tabulate handles multiple rounds of preferences"""
-    check50.run("./target/debug/runoff_test 1 22").stdout("3 4 0 0 ").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("print_winner did not print winner of election")
+# @check50.hidden("Did not identify Alice as winner of election")
 def print_winner1():
-    """print_winner prints name when someone has a majority"""
-    check50.run("./target/debug/runoff_test 2 8").stdout("Bob\n").exit(0)
+    """Identifies Bob as winner of election"""
+    votes: list[list[str]] = [[b, a, c]] * 3 + [[a, c, b]] * 2 + [[c, a, b]]
+    result = test(number_of_votes=6, votes=votes)
+    check_winner(result, "Bob\n")
 
 
 @check50.check(compiles)
-@check50.hidden("print_winner did not print winner and then return true")
+# @check50.hidden("Did not identify Alice as winner of election")
 def print_winner2():
-    """print_winner returns true when someone has a majority"""
-    check50.run("./target/debug/runoff_test 2 9").stdout("Bob\ntrue").exit(0)
+    """Identifies Charlie as winner of election"""
+    votes: list[list[str]] = [[c, b, a]] * 3 + [[b, c, a]] * 2 + [[a, a, c]]
+    result = test(number_of_votes=6, votes=votes)
+    check_winner(result, "Charlie\n")
 
 
 @check50.check(compiles)
-@check50.hidden("print_winner did not return false")
+@check50.hidden("Did not identify Alice as winner of election")
+def print_winner_complex():
+    """Handles complex vote"""
+    votes: list[list[str]] = (
+        [[a, b, c, d]] * 9
+        + [[b, a, c, d]] * 6
+        + [[c, a, b, d]] * 3
+        + [[c, b, a, d]] * 2
+        + [[d, a, b, c]] * 2
+        + [[d, b, a, c]] * 2
+    )
+    result = test(number_of_votes=24, votes=votes, candidates=[a, b, c, d])
+    check_winner(result, "Alice\n")
+
+
+@check50.check(compiles)
+@check50.hidden("Did not print both winners of election")
 def print_winner3():
-    """print_winner returns false when nobody has a majority"""
-    check50.run("./target/debug/runoff_test 2 10").stdout("false").exit(0)
+    """Prints multiple winners in case of tie"""
+    votes: list[list[str]] = [[a, b, c], [b, c, a]]
+    result = test(number_of_votes=2, votes=votes, number_of_winners=2)
+    if set(result.split("\n")) - {""} != {a, b}:  # type: ignore
+        raise check50.Mismatch(f"{a}\n{b}\n", result)
 
 
 @check50.check(compiles)
-@check50.hidden("print_winner did not return false")
+@check50.hidden("Did not print all three winners of election")
 def print_winner4():
-    """print_winner returns false when leader has exactly 50% of vote"""
-    check50.run("./target/debug/runoff_test 2 11").stdout("false").exit(0)
+    """Prints all names when all candidates are tied"""
+    votes: list[list[str]] = [[a, b, c], [b, c, a], [c, a, b]]
+    result = test(number_of_votes=3, votes=votes, number_of_winners=3)
+    if set(result.split("\n")) - {""} != {a, b, c}:  # type: ignore
+        raise check50.Mismatch(f"{a}\n{b}\n{c}\n", result)
 
 
-@check50.check(compiles)
-@check50.hidden("find_min did not identify correct minimum")
-def find_min1():
-    """find_min returns minimum number of votes for candidate"""
-    check50.run("./target/debug/runoff_test 2 12").stdout("1").exit(0)
+# Note that check needs to be unhidden in order for help to be displayed
+def check_winner(result, correct):
+    if result == correct:
+        return
+
+    help = None
+    r = result.rstrip()
+    c = correct.rstrip()
+    if r == c:
+        if result[-1] == "\n":
+            if result[-2].isspace():
+                help = "did you print an extra space?"
+        elif result[-1].isspace():
+            help = "did you print a space instead of a newline?"
+        else:
+            help = "did you forget the newline after the name?"
+
+    raise check50.Mismatch(correct, result, help=help)
 
 
-@check50.check(compiles)
-@check50.hidden("find_min did not identify correct minimum")
-def find_min2():
-    """find_min returns minimum when all candidates are tied"""
-    check50.run("./target/debug/runoff_test 2 13").stdout("7").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("find_min did not identify correct minimum")
-def find_min3():
-    """find_min ignores eliminated candidates"""
-    check50.run("./target/debug/runoff_test 2 14").stdout("4").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("is_tie did not return true")
-def is_tie1():
-    """is_tie returns true when election is tied"""
-    check50.run("./target/debug/runoff_test 2 15").stdout("true").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("is_tie did not return false")
-def is_tie2():
-    """is_tie returns false when election is not tied"""
-    check50.run("./target/debug/runoff_test 2 16").stdout("false").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("is_tie did not return false")
-def is_tie3():
-    """is_tie returns false when only some of the candidates are tied"""
-    check50.run("./target/debug/runoff_test 2 17").stdout("false").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("is_tie did not return true")
-def is_tie4():
-    """is_tie detects tie after some candidates have been eliminated"""
-    check50.run("./target/debug/runoff_test 2 18").stdout("true").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("eliminate did not eliminate correct candidates")
-def eliminate1():
-    """eliminate eliminates candidate in last place"""
-    check50.run("./target/debug/runoff_test 2 19").stdout("false false false true ").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("eliminate did not eliminate correct candidates")
-def eliminate2():
-    """eliminate eliminates multiple candidates in tie for last"""
-    check50.run("./target/debug/runoff_test 2 20").stdout("true false true false ").exit(0)
-
-
-@check50.check(compiles)
-@check50.hidden("eliminate did not eliminate correct candidates")
-def eliminate3():
-    """eliminate eliminates candidates after some already eliminated"""
-    check50.run("./target/debug/runoff_test 2 21").stdout("true false true false ").exit(0)
+def test(
+    number_of_votes: int,
+    votes: list[list[str]],
+    candidates=["Alice", "Bob", "Charlie"],
+    number_of_winners=1,
+):
+    program = check50.run(f"{exec} " + " ".join(candidates)).stdin(
+        str(number_of_votes), prompt=False
+    )
+    for vote in votes:
+        for rank in vote:
+            program.stdin(rank, prompt=False)
+    out: list[str] = program.stdout().split()[-number_of_winners:]  # type: ignore
+    result = ""
+    for line in out:
+        result += line + "\n"
+    check50.log(result)
+    return result

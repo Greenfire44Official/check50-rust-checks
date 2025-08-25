@@ -84,8 +84,11 @@ check50-rust-checks
 │   ├── scrabble✅
 │   └── substitution✅
 ├── pset3⛔️
-│   ├── plurality✅
-│   ├── runoff⛔️
+│   │   # Checkmarked have been tested to work, 
+│   │   # but I still need to add a check for repeat candidates
+│   │
+│   ├── plurality✅ 
+│   ├── runoff✅
 │   └── tideman⛔️
 ├── pset4⛔️
 │   ├── filter❌

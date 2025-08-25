@@ -3,6 +3,7 @@ import check50_rs
 import re
 
 exec = "./target/debug/plurality"
+a, b, c, d = "Alice", "Bob", "Charlie", "David"
 
 
 @check50.check()
@@ -15,9 +16,6 @@ def exists():
 def compiles():
     """src/main.rs compiles"""
     check50_rs.compile("src/main.rs")
-
-
-check50.check(compiles)
 
 
 @check50.hidden("Did not handle no candidates")
@@ -37,7 +35,7 @@ def accepts_one_candidates():
         process.exit(0, timeout=5)
     except check50.Failure as e:
         if str(e) != "timed out while waiting for program to exit":
-            raise check50.Failure("ejected MAX candidates (MAX=9)")
+            raise check50.Failure("Rejected MAX candidates (MAX=9)")
 
 
 @check50.check(compiles)
@@ -49,7 +47,7 @@ def accepts_max_candidates():
         process.exit(0, timeout=5)
     except check50.Failure as e:
         if str(e) != "timed out while waiting for program to exit":
-            raise check50.Failure("ejected MAX candidates (MAX=9)")
+            raise check50.Failure("Rejected MAX candidates (MAX=9)")
 
 
 @check50.check(compiles)
@@ -59,30 +57,49 @@ def handles_too_many_candidates():
     code = check50.run(f"{exec} 1 2 3 4 5 6 7 8 9 10").exit()
     if not code != 0:
         raise check50.Failure("Did not reject too many candidates (MAX=9)")
+    
+@check50.check(compiles)
+@check50.hidden("Did not reject invalid candidate")
+def handles_invalid_candidates():
+    """Rejects invalid candidate"""
+    try:
+        code = check50.run(f"{exec} {a} {b}").stdin("1").stdin(c).exit()
+    except check50.Failure as e:
+        if str(e) != "timed out while waiting for program to exit":
+            raise check50.Failure("Did not reject invalid candidate (MAX=9)")
+
+
+@check50.check(compiles)
+# @check50.hidden("Did not identify Alice as winner of election")
+def print_winner0():
+    """Identifies Alice as winner of election"""
+    result = test(number_of_votes=3, votes=[a] * 2 + [b] * 1)
+    check_winner(result, "Alice\n")
+
+
+@check50.check(compiles)
+# @check50.hidden("Did not identify Bob as winner of election")
+def print_winner1():
+    """Identifies Bob as winner of election"""
+    result = test(number_of_votes=4, votes=[a] + [b] * 2 + [c])
+    check_winner(result, "Bob\n")
+
+
+@check50.check(compiles)
+# @check50.hidden("Did not identify Charlie as winner of election")
+def print_winner2():
+    """Identifies Charlie as winner of election"""
+    result = test(number_of_votes=6, votes=[a] + [b] * 2 + [c] * 3)
+    check_winner(result, "Charlie\n")
 
 
 @check50.check(compiles)
 @check50.hidden("Did not identify Alice as winner of election")
-def print_winner0():
-    """Identifies Alice as winner of election"""
-    out = test(number_of_votes=10, votes=["Alice"] * 8 + ["Bob"] * 2)
-    check_winner(out, "Alice\n")
-
-
-@check50.check(compiles)
-@check50.hidden("Did not identify Bob as winner of election")
-def print_winner1():
-    """Identifies Bob as winner of election"""
-    out = test(number_of_votes=10, votes=["Alice"] + ["Bob"] * 8 + ["Charlie"])
-    check_winner(out, "Bob\n")
-
-
-@check50.check(compiles)
-@check50.hidden("Did not identify Charlie as winner of election")
-def print_winner2():
-    """Identifies Charlie as winner of election"""
-    out = test(number_of_votes=18, votes=["Alice"] + ["Bob"] * 8 + ["Charlie"] * 9)
-    check_winner(out, "Charlie\n")
+def print_winner_complex():
+    """Handles complex vote"""
+    votes: list[str] = [a] * 5 + [b] * 3 + [c] * 4 + [d] * 3
+    result = test(number_of_votes=15, votes=votes, candidates=[a, b, c, d])
+    check_winner(result, "Alice\n")
 
 
 @check50.check(compiles)
@@ -90,10 +107,12 @@ def print_winner2():
 def print_winner3():
     """Prints multiple winners in case of tie"""
     result = test(
-        number_of_votes=21, votes=["Alice"] * 8 + ["Bob"] * 8 + ["Charlie"] * 5
+        number_of_votes=21,
+        votes=[a] * 8 + [b] * 8 + [c] * 5,
+        number_of_winners=2,
     )
-    if set(result.split("\n")) - {""} != {"Alice", "Bob"}:  # type: ignore
-        raise check50.Mismatch("Alice\nBob\nCharlie\n", result)
+    if set(result.split("\n")) - {""} != {a, b}:  # type: ignore
+        raise check50.Mismatch("Alice\nBob\n", result)
 
 
 @check50.check(compiles)
@@ -101,9 +120,11 @@ def print_winner3():
 def print_winner4():
     """Prints all names when all candidates are tied"""
     result = test(
-        number_of_votes=24, votes=["Alice"] * 8 + ["Bob"] * 8 + ["Charlie"] * 8
+        number_of_votes=24,
+        votes=[a] * 8 + [b] * 8 + [c] * 8,
+        number_of_winners=3,
     )
-    if set(result.split("\n")) - {""} != {"Alice", "Bob", "Charlie"}:  # type: ignore
+    if set(result.split("\n")) - {""} != {a, b, c}:  # type: ignore
         raise check50.Mismatch("Alice\nBob\nCharlie\n", result)
 
 
@@ -128,9 +149,18 @@ def check_winner(result, correct):
 
 
 def test(
-    number_of_votes: int, votes: list[str], candidates=["Alice", "Bob", "Charlie"]
+    number_of_votes: int,
+    votes: list[str],
+    candidates=[a, b, c],
+    number_of_winners=1,
 ):
-    program = check50.run(f"{exec} " + " ".join(candidates)).stdin(str(number_of_votes))
+    program = check50.run(f"{exec} " + " ".join(candidates)).stdin(
+        str(number_of_votes), prompt=False
+    )
     for vote in votes:
-        program.stdin(vote)
-    return program.stdout()
+        program.stdin(vote, prompt=False)
+    out: list[str] = program.stdout().split()[-number_of_winners:]  # type: ignore
+    result = ""
+    for line in out:
+        result += line + "\n"
+    return result
