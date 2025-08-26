@@ -3,7 +3,7 @@ import check50_rs
 import re
 
 exec = "./target/debug/runoff"
-a, b, c, d = "Alice", "Bob", "Charlie", "David"
+a, b, c, d, e = "Alice", "Bob", "Charlie", "David", "Earl"
 
 
 @check50.check()
@@ -30,7 +30,7 @@ def handles_no_candidates():
 @check50.hidden("Rejected one candidates (MAX=9)")
 def accepts_one_candidates():
     """Accepts one candidates"""
-    process = check50.run(f"{exec} Alice")
+    process = check50.run(f"{exec} {a}")
     try:
         process.exit(0, timeout=5)
     except check50.Failure as e:
@@ -67,50 +67,41 @@ def handles_invalid_candidates():
 
 
 @check50.check(compiles)
-# @check50.hidden("Did not identify Alice as winner of election")
 def print_winner0():
     """Identifies Alice as winner of election"""
     votes: list[list[str]] = [[a, b, c]] * 3 + [[b, c, a]] * 2 + [[c, a, b]]
     result = test(number_of_votes=6, votes=votes)
-    check_winner(result, "Alice\n")
+    check_winner(result, f"{a}\n")
 
 
 @check50.check(compiles)
-# @check50.hidden("Did not identify Alice as winner of election")
 def print_winner1():
     """Identifies Bob as winner of election"""
     votes: list[list[str]] = [[b, a, c]] * 3 + [[a, c, b]] * 2 + [[c, a, b]]
     result = test(number_of_votes=6, votes=votes)
-    check_winner(result, "Bob\n")
+    check_winner(result, f"{b}\n")
 
 
 @check50.check(compiles)
-# @check50.hidden("Did not identify Alice as winner of election")
 def print_winner2():
     """Identifies Charlie as winner of election"""
     votes: list[list[str]] = [[c, b, a]] * 3 + [[b, c, a]] * 2 + [[a, a, c]]
     result = test(number_of_votes=6, votes=votes)
-    check_winner(result, "Charlie\n")
+    check_winner(result, f"{c}\n")
 
 
 @check50.check(compiles)
-@check50.hidden("Did not identify Alice as winner of election")
 def print_winner_complex():
     """Handles complex vote"""
     votes: list[list[str]] = (
-        [[a, b, c, d]] * 9
-        + [[b, a, c, d]] * 6
-        + [[c, a, b, d]] * 3
-        + [[c, b, a, d]] * 2
-        + [[d, a, b, c]] * 2
-        + [[d, b, a, c]] * 2
+        [[a, e, b, c, d]] * 3 + [[d, b, c, a, e]] + [[d, c, b, a, e]]
     )
-    result = test(number_of_votes=24, votes=votes, candidates=[a, b, c, d])
-    check_winner(result, "Alice\n")
+    result = test(number_of_votes=4, votes=votes, candidates=[a, b, c, d, e])
+    check_winner(result, f"{a}\n")
 
 
 @check50.check(compiles)
-@check50.hidden("Did not print both winners of election")
+# @check50.hidden("Did not print both winners of election")
 def print_winner3():
     """Prints multiple winners in case of tie"""
     votes: list[list[str]] = [[a, b, c], [b, c, a]]
@@ -120,7 +111,7 @@ def print_winner3():
 
 
 @check50.check(compiles)
-@check50.hidden("Did not print all three winners of election")
+# @check50.hidden("Did not print all three winners of election")
 def print_winner4():
     """Prints all names when all candidates are tied"""
     votes: list[list[str]] = [[a, b, c], [b, c, a], [c, a, b]]
@@ -152,18 +143,22 @@ def check_winner(result, correct):
 def test(
     number_of_votes: int,
     votes: list[list[str]],
-    candidates=["Alice", "Bob", "Charlie"],
+    candidates=[a, b, c],
     number_of_winners=1,
 ):
     program = check50.run(f"{exec} " + " ".join(candidates)).stdin(
         str(number_of_votes), prompt=False
     )
+    check50.log("────────────────────────")
     for vote in votes:
         for rank in vote:
             program.stdin(rank, prompt=False)
+        check50.log("────────────────────────")
+
     out: list[str] = program.stdout().split()[-number_of_winners:]  # type: ignore
     result = ""
     for line in out:
         result += line + "\n"
+    check50.log(f"Output:")
     check50.log(result)
     return result
