@@ -1,9 +1,19 @@
 import check50
 import check50_rs
-import re
 
 exec = "./target/debug/tideman"
-a, b, c, d, e = "Alice", "Bob", "Charlie", "David", "Earl"
+a, b, c, d, e, f, g, h, i, j = (
+    "Alice",
+    "Bob",
+    "Charlie",
+    "David",
+    "Earl",
+    "Frank",
+    "Grace",
+    "Heidi",
+    "Ivan",
+    "Judy",
+)
 
 
 @check50.check()
@@ -27,36 +37,39 @@ def handles_no_candidates():
 
 
 @check50.check(compiles)
-@check50.hidden("Rejected one candidates (MAX=9)")
-def accepts_one_candidates():
-    """Accepts one candidates"""
-    process = check50.run(f"{exec} {a}")
-    try:
-        process.exit(0, timeout=5)
-    except check50.Failure as e:
-        if str(e) != "timed out while waiting for program to exit":
-            raise check50.Failure("Rejected MAX candidates (MAX=9)")
+@check50.hidden("Rejected one candidate (MAX=9)")
+def accepts_one_candidate():
+    """Accepts one candidate"""
+    check50.run(
+        f"{exec} {a}"
+    ).reject()  # Uses reject to confirm if program waits for input instead of exiting
 
 
 @check50.check(compiles)
 @check50.hidden("Rejected MAX candidates (MAX=9)")
 def accepts_max_candidates():
     """Accepts MAX candidates"""
-    process = check50.run(f"{exec} 1 2 3 4 5 6 7 8 9")
-    try:
-        process.exit(0, timeout=5)
-    except check50.Failure as e:
-        if str(e) != "timed out while waiting for program to exit":
-            raise check50.Failure("Rejected MAX candidates (MAX=9)")
+    check50.run(
+        f"{exec} {a} {b} {c} {d} {e} {f} {g} {h} {i}"
+    ).reject()  # Uses reject to confirm if program waits for input instead of exiting
 
 
 @check50.check(compiles)
 @check50.hidden("Did not reject too many candidates (MAX=9)")
 def handles_too_many_candidates():
     """Rejects too many candidates"""
-    code = check50.run(f"{exec} 1 2 3 4 5 6 7 8 9 10").exit()
+    code = check50.run(f"{exec} {a} {b} {c} {d} {e} {f} {g} {h} {i} {j}").exit()
     if not code != 0:
         raise check50.Failure("Did not reject too many candidates (MAX=9)")
+
+
+@check50.check(compiles)
+@check50.hidden("Did not reject duplicate candidates")
+def handles_duplicate_candidates():
+    """Rejects duplicate candidates"""
+    code = check50.run(f"{exec} {a} {b} {a}").exit()
+    if not code != 0:
+        raise check50.Failure("Did not reject duplicate candidates")
 
 
 @check50.check(compiles)
@@ -64,6 +77,15 @@ def handles_too_many_candidates():
 def handles_invalid_candidates():
     """Rejects invalid candidate"""
     code = check50.run(f"{exec} {a} {b}").stdin("1").stdin(c).exit(1)
+
+
+@check50.check(compiles)
+@check50.hidden("Did not reject duplicate votes in a single ballot")
+def handles_duplicate_votes():
+    """Rejects duplicate votes in a single ballot"""
+    code = check50.run(f"{exec} {a} {b} {c}").stdin("1").stdin(f"{a}\n{a}\n{b}").exit()
+    if not code != 0:
+        raise check50.Failure("Did not reject duplicate votes in a single ballot")
 
 
 @check50.check(compiles)
