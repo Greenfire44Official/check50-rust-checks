@@ -28,6 +28,7 @@ def compiles():
     check50_rs.compile("src/main.rs")
 
 
+@check50.check(compiles)
 @check50.hidden("Did not handle no candidates")
 def handles_no_candidates():
     """Handles no candidates"""
@@ -36,25 +37,19 @@ def handles_no_candidates():
         raise check50.Failure("Did not handle no candidates")
 
 
-@check50.check(compiles)
-@check50.hidden("Rejected one candidate (MAX=9)")
-def accepts_one_candidates():
+@check50.check(handles_no_candidates)
+def accepts_one_candidate():
     """Accepts one candidate"""
-    check50.run(
-        f"{exec} {a}"
-    ).reject()  # Uses reject to confirm if program waits for input instead of exiting
+    check50_rs.run_and_wait(f"{exec} {a}")
 
 
-@check50.check(compiles)
-@check50.hidden("Rejected MAX candidates (MAX=9)")
+@check50.check(accepts_one_candidate)
 def accepts_max_candidates():
     """Accepts MAX candidates"""
-    check50.run(
-        f"{exec} {a} {b} {c} {d} {e} {f} {g} {h} {i}"
-    ).reject()  # Uses reject to confirm if program waits for input instead of exiting
+    check50_rs.run_and_wait(f"{exec} {a} {b} {c} {d} {e} {f} {g} {h} {i}")
 
 
-@check50.check(compiles)
+@check50.check(accepts_max_candidates)
 @check50.hidden("Did not reject too many candidates (MAX=9)")
 def handles_too_many_candidates():
     """Rejects too many candidates"""
@@ -63,7 +58,7 @@ def handles_too_many_candidates():
         raise check50.Failure("Did not reject too many candidates (MAX=9)")
 
 
-@check50.check(compiles)
+@check50.check(handles_too_many_candidates)
 @check50.hidden("Did not reject duplicate candidates")
 def handles_duplicate_candidates():
     """Rejects duplicate candidates"""
@@ -72,14 +67,14 @@ def handles_duplicate_candidates():
         raise check50.Failure("Did not reject duplicate candidates")
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_candidates)
 @check50.hidden("Did not reject invalid candidate")
 def handles_invalid_candidates():
     """Rejects invalid candidate"""
     code = check50.run(f"{exec} {a} {b}").stdin("1").stdin(c).exit(1)
 
 
-@check50.check(compiles)
+@check50.check(handles_invalid_candidates)
 @check50.hidden("Did not reject duplicate votes in a single ballot")
 def handles_duplicate_votes():
     """Rejects duplicate votes in a single ballot"""
@@ -88,7 +83,7 @@ def handles_duplicate_votes():
         raise check50.Failure("Did not reject duplicate votes in a single ballot")
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_votes)
 def print_winner0():
     """Identifies Alice as winner of election"""
     votes: list[list[str]] = [[a, b, c]] * 3 + [[b, c, a]] * 2 + [[c, a, b]]
@@ -96,7 +91,7 @@ def print_winner0():
     check_winner(result, f"{a}\n")
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_votes)
 def print_winner1():
     """Identifies Bob as winner of election"""
     votes: list[list[str]] = [[b, a, c]] * 3 + [[a, c, b]] * 2 + [[c, a, b]]
@@ -104,7 +99,7 @@ def print_winner1():
     check_winner(result, f"{b}\n")
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_votes)
 def print_winner2():
     """Identifies Charlie as winner of election"""
     votes: list[list[str]] = [[c, b, a]] * 3 + [[b, c, a]] * 2 + [[a, b, c]]
@@ -112,7 +107,7 @@ def print_winner2():
     check_winner(result, f"{c}\n")
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_votes)
 def print_winner_complex():
     """Handles complex vote"""
     votes: list[list[str]] = (
@@ -122,7 +117,7 @@ def print_winner_complex():
     check_winner(result, f"{a}\n")
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_votes)
 # @check50.hidden("Did not print both winners of election")
 def print_winner3():
     """Prints multiple winners in case of tie"""
@@ -132,7 +127,7 @@ def print_winner3():
         raise check50.Mismatch(f"{a}\n{b}\n", result)
 
 
-@check50.check(compiles)
+@check50.check(handles_duplicate_votes)
 # @check50.hidden("Did not print all three winners of election")
 def print_winner4():
     """Prints all names when all candidates are tied"""
