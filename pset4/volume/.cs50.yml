@@ -1,12 +1,8 @@
-lab50:
-  files:
-    - !exclude "*"
-    - !include volume.c
-    - !include input.wav
-
-check50:
+check50: 
   files: &check50_files
     - !exclude "*"
-    - !require volume.c
-
-
+    - !require src/main.rs
+    - !require Cargo.toml
+    - !include Cargo.lock
+  dependencies:
+    - git+https://github.com/Greenfire44Official/check50_rs.git

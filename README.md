@@ -127,7 +127,7 @@ check50-rust-checks
 │   │   ├── less ❌
 │   │   └── more ❌
 │   ├── recover ⛔️
-│   └── volume ⛔️
+│   └── volume ✅
 ├── pset5 ⛔️
 │   ├── inheritance ⛔️
 │   └── speller ❌
