@@ -122,15 +122,15 @@ check50-rust-checks
 │   ├── plurality ✅ 
 │   ├── runoff ✅
 │   └── tideman ✅
-├── pset4 ⛔️
+├── pset4 ✅
 │   ├── filter ✅
 │   │   ├── less ✅
 │   │   └── more ✅
-│   ├── recover ⛔️
+│   ├── recover ✅
 │   └── volume ✅
 ├── pset5 ⛔️
 │   ├── inheritance ⛔️
 │   └── speller ❌
 └── pset6 ❌
-    └── dna
+    └── dna ❌
 ```

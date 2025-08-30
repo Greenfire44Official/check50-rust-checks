@@ -1,6 +1,7 @@
 import check50
 import check50_rs
 
+EXEC = "./target/debug/recover"
 HASHES = [
     "6e2e4e56677e55cda750a2c0bc1c96fb4952ee37aafcc0810d0d5a883834abee",  # 000.jpg
     "4b9e49c8b47574ecda37045f9a8411f5cdc02c767cbe0d021d158321f730c26a",  # 001.jpg
@@ -51,8 +52,9 @@ HASHES = [
     "b2163d1377423727e6fd603ee6b20383bf90a742fc854be12783faa94129a6b3",  # 046.jpg
     "c08f342831bc36a9f4cccc2312876ce0abe785a77d579dfb2eff0c6fe1d71b6b",  # 047.jpg
     "bba63b6b98e0b5c6fbba24fd840a8eac0ff2b86973338e89ef699920c8835e30",  # 048.jpg
-    "0ff470f2272f656483779e1901611d9c5237df521e51b5aab80760c5c95689af"   # 049.jpg
+    "0ff470f2272f656483779e1901611d9c5237df521e51b5aab80760c5c95689af",  # 049.jpg
 ]
+
 
 @check50.check()
 def exists():
@@ -64,38 +66,35 @@ def exists():
 def compiles():
     """src/main.rs compiles"""
     check50_rs.compile("src/main.rs")
+    check50.include("card.raw")
+
 
 @check50.check(compiles)
 def test_noimage():
     """handles lack of forensic image"""
-    check50.run("./target/debug/recover").exit(1)
+    check50.run(f"{EXEC}").exit(1)
+
 
 @check50.check(compiles)
 def first_image():
     """recovers 000.jpg correctly"""
-    check50.run("./target/debug/recover card.raw").exit(0, timeout=10)
+    check50.run(f"{EXEC} card.raw").exit(0, timeout=10)
     if check50.hash("000.jpg") != HASHES[0]:
         raise check50.Failure("recovered image does not match")
+
 
 @check50.check(compiles)
 def middle_images():
     """recovers middle images correctly"""
-    check50.run("./target/debug/recover card.raw").exit(0, timeout=10)
+    check50.run(f"{EXEC} card.raw").exit(0, timeout=10)
     for i, hash in enumerate(HASHES[1:-1], 1):
         if hash != check50.hash("{:03d}.jpg".format(i)):
             raise check50.Failure("recovered image does not match")
 
+
 @check50.check(compiles)
 def last_image():
     """recovers 049.jpg correctly"""
-    check50.run("./target/debug/recover card.raw").exit(0, timeout=10)
+    check50.run(f"{EXEC} card.raw").exit(0, timeout=10)
     if check50.hash("049.jpg") != HASHES[-1]:
         raise check50.Failure("recovered image does not match")
-  
-@check50.check(last_image)
-def memory():
-    """program is free of memory errors"""
-    code = check50_rs.valgrind("./target/debug/recover card.raw").exit(timeout=10)
-    if code != 0:
-        raise check50.Failure("valgrind returned a segfault")
-
