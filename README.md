@@ -123,9 +123,9 @@ check50-rust-checks
 │   ├── runoff ✅
 │   └── tideman ✅
 ├── pset4 ⛔️
-│   ├── filter ❌
-│   │   ├── less ❌
-│   │   └── more ❌
+│   ├── filter ✅
+│   │   ├── less ✅
+│   │   └── more ✅
 │   ├── recover ⛔️
 │   └── volume ✅
 ├── pset5 ⛔️

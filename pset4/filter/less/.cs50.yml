@@ -6,3 +6,4 @@ check50:
     - !include Cargo.lock
   dependencies:
     - git+https://github.com/Greenfire44Official/check50_rs.git
+    - Pillow
