@@ -81,7 +81,7 @@ def generate_test_files(csv_filename, txt_filename):
                 profile[str_seq] = philosopher_counts[str_seq]
             else:
                 # Use random value for non-matching positions
-                profile[str_seq] = random.randint(5, 30)
+                profile[str_seq] = random.randint(5, 30) # type: ignore
         profiles.append(profile)
         person_counter += 1
     
@@ -101,7 +101,7 @@ def generate_test_files(csv_filename, txt_filename):
                 profile[str_seq] = philosopher_counts[str_seq]
             else:
                 # Use random value for non-matching positions
-                profile[str_seq] = random.randint(5, 30)
+                profile[str_seq] = random.randint(5, 30) # type: ignore
         profiles.append(profile)
         person_counter += 1
     

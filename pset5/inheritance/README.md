@@ -1,4 +1,4 @@
-Due to the way this problem works I have to parse the output to check the validity of it. due to this the output must follow the following restrictions:
+Due to the way this problem works I have to parse the output to check the validity of it. due to this the output must adhere to the following restrictions:
 - Each person in the family tree must be printed in a separate line.
 - The program must output 3 generations in total. I encourage people to write their program in a way that you can generate families of different number of generations, as is the case in the original problem. But this checker will only expect an output of 3 generations.
 - Each generation will have the following names (Case sensitive):
@@ -14,7 +14,7 @@ Due to the way this problem works I have to parse the output to check the validi
    + `Child {you can print whatever text you desire in here, as long as it's all printed in one line} OA`
    These are all valid.
 - The family should be printed with the following structure:
-  ``` bash
+  ```
   Child ... [Alleles]
       Parent ... [Alleles]
           Grandparent ... [Alleles]
@@ -24,8 +24,9 @@ Due to the way this problem works I have to parse the output to check the validi
           Grandparent ... [Alleles]
   ```
 
+## Example
 Example of a valid formatting of the output:
-``` bash
+```
 Child (Generation 0): blood type OB
     Parent (Generation 1): blood type OA
       Grandparent (Generation 2): blood type OA
