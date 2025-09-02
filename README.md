@@ -12,9 +12,7 @@ If you want to use a different extension, you can:
 - Update the imports and functions in each test's `__init__.py` file.
 - Use your editor's find-and-replace to swap references to `check50_rs` with your own extension.
 
-**WORK IN PROGRESS**
-
-[Current Progress](#progress)
+[Current Progress](#progress) (Completed)
 
 ## How to Use
 
@@ -96,6 +94,8 @@ If you want to use a different extension, you can:
 
 ## Progress
 
+### ✅PROJECT COMPLETE! :)✅ 
+
 | Status | Meaning |
 |--------|---------|
 | ✅     | Tested and working |
@@ -128,9 +128,9 @@ check50-rust-checks
 │   │   └── more ✅
 │   ├── recover ✅
 │   └── volume ✅
-├── pset5 ⛔️
+├── pset5 ✅
 │   ├── inheritance ✅
-│   └── speller ❌
+│   └── speller ✅
 └── pset6 ✅
     └── dna ✅
 ```
